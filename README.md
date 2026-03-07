@@ -2,8 +2,6 @@
 
 Sistema de gestão de filas projetado para operação local em agência, com foco em custo total de propriedade, continuidade de atendimento e inteligência operacional.
 
-![Status e saude da operacao](img/225333.jpg)
-
 ## O Problema
 
 Em ambiente real, o contrato de sistema de senhas alugado custava em torno de `R$ 6.000/ano` e entregava pouco para a rotina da agência:
@@ -56,7 +54,7 @@ O BI foi desenhado para operação, não para relatório estático.
 
 ## Robustez de Infraestrutura
 
-![Totem e infraestrutura local](img/223454.png)
+![Totem e infraestrutura local](IMAGENS%20LINKEDIN-README/Captura%20de%20tela%202026-03-06%20223454.png)
 
 Arquitetura orientada a ambiente local:
 
@@ -69,17 +67,17 @@ Arquitetura orientada a ambiente local:
 
 Uso recomendado no repositorio publico (README):
 
-1. `img/225333.jpg` para status/saude da operacao.
-2. `img/223454.png` para totem e robustez da infraestrutura.
+1. `IMAGENS LINKEDIN-README/Captura de tela 2026-03-06 225333.png` para status/saude da operacao.
+2. `IMAGENS LINKEDIN-README/Captura de tela 2026-03-06 223454.png` para totem e robustez da infraestrutura.
 
 Uso recomendado no post de LinkedIn:
 
-1. `img/223528.png` como capa de impacto (Painel TV).
-2. `img/230403.jpg` como evidencia de BI e decisao gerencial.
+1. `IMAGENS LINKEDIN-README/Captura de tela 2026-03-06 223528.png` como capa de impacto (Painel TV).
+2. `IMAGENS LINKEDIN-README/Captura de tela 2026-03-06 230403.png` como evidencia de BI e decisao gerencial.
 
 Acervo adicional do fluxo operacional:
 
-1. `img/170023.png` para notificacao Toast no desktop.
+1. `IMAGENS LINKEDIN-README/Captura de tela 2026-03-07 170023.png` para notificacao Toast no desktop.
 
 ## Tabela de Comparacao: Custo x Personalizacao x Seguranca
 
@@ -108,7 +106,7 @@ Acervo adicional do fluxo operacional:
 ## Estrutura recomendada do repositorio publico
 
 1. `README.md` com pitch tecnico e visao de negocio.
-2. `img/` com evidencias visuais de robustez (TV, BI, toast, totem, status).
+2. `IMAGENS LINKEDIN-README/` com evidencias visuais de robustez (TV, BI, toast, totem, status).
 3. `ARQUITETURA_PUBLICA.md` com fluxo de componentes sem exposicao de codigo.
 4. `demo_simulada/` com paineis separados e sincronizados para demonstracao.
 
