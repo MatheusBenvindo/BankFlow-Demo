@@ -30,7 +30,7 @@ O BankFlow opera como um ecossistema integrado. Cada módulo atende uma etapa do
 2. Painel TV para chamadas públicas em tempo real.
 3. Painel do atendente em desktop nativo com WebView2.
 4. Painel do atendente via navegador para contingência.
-5. Painel administrativo para gestão operacional.
+5. Painel administrativo para gestão operacional, configuração de videos/pagina totem tv (com opção de incluir api de noticias ou de não usar as mesmas, podendo escolher na configuração e garantindo uma pré visualização ao administrador, com opção de colocar mais de 1 video diretamente pelo painel de gerenciamento), configuração da plataforma.
 6. Módulo de BI para acompanhamento de desempenho.
 7. Camada de segurança para autenticação e proteção de integrações.
 
