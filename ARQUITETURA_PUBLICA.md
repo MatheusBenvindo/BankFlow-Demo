@@ -10,14 +10,14 @@ Apresentar como os modulos se conectam em ambiente real sem expor codigo-fonte p
 
 ```mermaid
 flowchart LR
-  T[Totem de Autoatendimento]\n(Emissao de senha) --> API[SenhasAPI .NET 9]
+  T[Totem de Autoatendimento<br/>Emissao de senha] --> API[SenhasAPI .NET 9]
   API --> HUB[SignalR Hub]
   HUB --> TV[Painel TV]
-  HUB --> AD[Atendente Desktop\nWebView2 + Toast]
-  HUB --> AW[Atendente Web\nFallback]
+  HUB --> AD[Atendente Desktop<br/>WebView2 + Toast]
+  HUB --> AW[Atendente Web<br/>Fallback]
   API --> DB[(SQLite + EF Core)]
-  API --> GW[Gerenciamento Web]\n(MVC + BI)
-  GW --> BI[Painel BI]\n(Ranking + Volumetria)
+  API --> GW[Gerenciamento Web<br/>MVC + BI]
+  GW --> BI[Painel BI<br/>Ranking + Volumetria]
   API --> PX[Proxy Seguro de Noticias]
   PX --> TV
 ```
