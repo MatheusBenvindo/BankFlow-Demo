@@ -70,14 +70,22 @@ Uso recomendado no repositorio publico (README):
 1. `IMAGENS LINKEDIN-README/Captura de tela 2026-03-06 225333.png` para status/saude da operacao.
 2. `IMAGENS LINKEDIN-README/Captura de tela 2026-03-06 223454.png` para totem e robustez da infraestrutura.
 
+![Status e saude da operacao](IMAGENS%20LINKEDIN-README/Captura%20de%20tela%202026-03-06%20225333.png)
+
 Uso recomendado no post de LinkedIn:
 
 1. `IMAGENS LINKEDIN-README/Captura de tela 2026-03-06 223528.png` como capa de impacto (Painel TV).
 2. `IMAGENS LINKEDIN-README/Captura de tela 2026-03-06 230403.png` como evidencia de BI e decisao gerencial.
 
+![Painel TV - capa de impacto](IMAGENS%20LINKEDIN-README/Captura%20de%20tela%202026-03-06%20223528.png)
+
+![BI e decisao gerencial](IMAGENS%20LINKEDIN-README/Captura%20de%20tela%202026-03-06%20230403.png)
+
 Acervo adicional do fluxo operacional:
 
 1. `IMAGENS LINKEDIN-README/Captura de tela 2026-03-07 170023.png` para notificacao Toast no desktop.
+
+![Notificacao Toast no desktop](IMAGENS%20LINKEDIN-README/Captura%20de%20tela%202026-03-07%20170023.png)
 
 ## Tabela de Comparacao: Custo x Personalizacao x Seguranca
 
