@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Senhas - BankFlow (Simulação)</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Asap:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: 'Asap', sans-serif !important;
+      background: linear-gradient(135deg, #00AE9D 0%, #003641 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0;
+    }
+
+    .main-wrapper {
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sim-banner {
+      background: #c9d200;
+      color: #101214;
+      text-align: center;
+      padding: 8px 14px;
+      font-weight: 700;
+      font-size: 13px;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sim-banner a {
+      color: #101214;
+      text-decoration: underline;
+      font-weight: bold;
+    }
+
+    .header {
+      width: 100%;
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #eee;
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo {
+      width: 120px;
+      height: 50px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #00AE9D, #003641);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-name {
+      font-size: 28px;
+      font-weight: bold;
+      color: #003641;
+      letter-spacing: -1px;
+    }
+
+    .brand-subtitle {
+      font-size: 14px;
+      color: #00AE9D;
+      font-weight: 500;
+    }
+
+    .welcome-text {
+      font-size: 24px;
+      color: #003641;
+      font-weight: 300;
+    }
+
+    .container {
+      width: 100%;
+      padding: 40px;
+      text-align: center;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow-y: auto;
+    }
+
+    .service-title {
+      font-size: 3.5vw;
+      color: #003641;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .service-subtitle {
+      font-size: 1.5vw;
+      color: #00AE9D;
+      margin-bottom: 40px;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+      max-width: 1200px;
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .service-button {
+      background: white;
+      border: 3px solid #00AE9D;
+      border-radius: 15px;
+      padding: 25px 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 174, 157, 0.2);
+      color: #003641;
+    }
+
+    /* ESTILO DO BOTÃO SELECIONADO */
+    .service-button.selected {
+      background: #00AE9D;
+      color: white;
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 174, 157, 0.4);
+    }
+
+    .service-button.priority {
+      border-color: #49479D;
+    }
+
+    .service-button.priority.selected {
+      background: #49479D;
+      color: white;
+    }
+
+    .service-button .icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .service-button .icon img {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+    }
+
+    .service-button .title {
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1.2;
+      pointer-events: none;
+    }
+
+    /* SEÇÃO DE PRIORIDADE RESTAURADA */
+    .priority-section {
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 2px solid #f0f0f0;
+    }
+
+    .priority-title {
+      font-size: 2.5vw;
+      color: #49479D;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .priority-buttons {
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .priority-button {
+      background: white;
+      border: 3px solid #49479D;
+      border-radius: 15px;
+      padding: 20px 40px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(73, 71, 157, 0.2);
+      font-size: 24px;
+      font-weight: 600;
+      color: #49479D;
+    }
+
+    .priority-button:hover {
+      background: #49479D;
+      color: white;
+      transform: translateY(-3px);
+    }
+
+    #senha-display {
+      font-size: 10em;
+      font-weight: bold;
+      color: #00AE9D;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 0.5s ease;
+    }
+
+    .back-button {
+      position: absolute;
+      bottom: 40px;
+      left: 40px;
+      background: #003641;
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 15px 25px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 54, 65, 0.3);
+      text-decoration: none;
+    }
+
+    .back-button:hover {
+      background: #00AE9D;
+      transform: translateY(-2px);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+        padding: 20px;
+      }
+
+      .welcome-text {
+        display: none;
+      }
+
+      .service-title {
+        font-size: 6vw;
+      }
+
+      .service-subtitle {
+        font-size: 3vw;
+      }
+
+      #senha-display {
+        font-size: 15vw;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="main-wrapper">
+    <div class="sim-banner">
+      <span>⚙️ SIMULAÇÃO APROXIMADA: Muitas outras funções operacionais podem ser vistas pelas imagens no repositório
+        público. <a href="https://www.linkedin.com/in/matheus-b-ribeiro/" target="_blank">Contato do
+          Desenvolvedor</a></span>
+      <a href="index.html" style="margin-left: 20px;">🏠 Voltar ao Hub</a>
+    </div>
+    <div class="header">
+      <div class="logo-section">
+        <div class="logo"></div>
+        <div class="brand-text">
+          <div class="brand-name">BANKFLOW</div>
+          <div class="brand-subtitle">Sistema de Filas</div>
+        </div>
+      </div>
+      <div class="welcome-text">Selecione uma opção de atendimento</div>
+    </div>
+
+    <div class="container">
+      <div id="service-selection">
+        <h1 class="service-title">Atendimento Geral</h1>
+        <p class="service-subtitle">Toque no serviço que deseja utilizar</p>
+
+        <div class="services-grid">
+          <div class="service-button" data-service="ATEND_PF">
+            <div class="icon"><img src="assets/icon-pf.png" alt="Atend PF"></div>
+            <div class="title">Atend PF</div>
+          </div>
+          <div class="service-button" data-service="ATEND_PJ">
+            <div class="icon"><img src="assets/icon-pj.png" alt="Atend PJ"></div>
+            <div class="title">Atend PJ</div>
+          </div>
+          <div class="service-button" data-service="CAIXA">
+            <div class="icon"><img src="assets/icon-caixa.png" alt="Caixa"></div>
+            <div class="title">Caixa</div>
+          </div>
+          <div class="service-button" data-service="GERENTE">
+            <div class="icon"><img src="assets/icon-gerente.png" alt="Gerente"></div>
+            <div class="title">Gerente</div>
+          </div>
+          <div class="service-button" data-service="SEGUROS">
+            <div class="icon"><img src="assets/icon-seguros.png" alt="Seguros"></div>
+            <div class="title">Seguros</div>
+          </div>
+        </div>
+
+        <div class="priority-section">
+          <h2 class="priority-title">Selecione a prioridade desejada</h2>
+          <div class="priority-buttons">
+            <div class="priority-button" data-priority="NORMAL">Normal</div>
+            <div class="priority-button" data-priority="PRIORITARIO">Prioritário</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="priority-selection" class="hidden">
+        <h1 class="service-title">Selecione o Tipo de Prioridade</h1>
+        <div id="priority-options" class="services-grid">
+        </div>
+        <button class="back-button" onclick="showServiceSelection()">
+          <i class="fas fa-arrow-left"></i> Voltar
+        </button>
+      </div>
+
+      <div id="senha-display" class="hidden">--</div>
+    </div>
+  </div>
+
+  <script src="sim-core.js"></script>
+  <script>
+    let selectedService = null;
+
+    const priorityOptions = {
+      'PRIORITARIO': [
+        { id: '60+', title: '60+', icon: 'assets/icon-idoso.png' },
+        { id: '80+', title: '80+', icon: 'assets/icon-idoso.png' },
+        { id: 'CRIANCA_COLO', title: 'Criança de Colo', icon: 'assets/icon-crianca-lactante.png' },
+        { id: 'GESTANTE', title: 'Gestante', icon: 'assets/icon-gestante.png' },
+        { id: 'LACTANTE', title: 'Lactante', icon: 'assets/icon-crianca-lactante.png' },
+        { id: 'PORTADOR_DEFICIENCIA', title: 'Portador de Deficiência', icon: 'assets/icon-pcd.png' }
+      ]
+    };
+
+    // Adiciona evento de clique aos botões de serviço
+    document.querySelectorAll('.service-button:not(.priority)').forEach(button => {
+      button.addEventListener('click', function () {
+        // Remove a classe 'selected' de todos os outros botões de serviço
+        document.querySelectorAll('#service-selection .service-button').forEach(btn => btn.classList.remove('selected'));
+
+        // Adiciona a classe 'selected' apenas ao botão clicado
+        this.classList.add('selected');
+
+        // Armazena o serviço selecionado
+        selectedService = this.dataset.service;
+      });
+    });
+
+    // Adiciona evento de clique aos botões de prioridade (Normal/Prioritário)
+    document.querySelectorAll('.priority-button').forEach(button => {
+      button.addEventListener('click', function () {
+        const priorityType = this.dataset.priority;
+
+        if (!selectedService) {
+          alert('Por favor, selecione um tipo de atendimento primeiro.');
+          return;
+        }
+
+        if (priorityType === 'NORMAL') {
+          generateTicket(selectedService, 'NORMAL');
+        } else if (priorityType === 'PRIORITARIO') {
+          showPriorityOptions();
+        }
+      });
+    });
+
+    function showPriorityOptions() {
+      document.getElementById('service-selection').classList.add('hidden');
+      document.getElementById('priority-selection').classList.remove('hidden');
+
+      const priorityContainer = document.getElementById('priority-options');
+      priorityContainer.innerHTML = '';
+
+      priorityOptions.PRIORITARIO.forEach(option => {
+        const button = document.createElement('div');
+        button.className = 'service-button priority';
+        button.innerHTML = `
+                    <div class="icon">
+                        <img src="${option.icon}" alt="${option.title}">
+                    </div>
+                    <div class="title">${option.title}</div>
+                `;
+        button.addEventListener('click', () => {
+          generateTicket(selectedService, option.id);
+        });
+        priorityContainer.appendChild(button);
+      });
+    }
+
+    function showServiceSelection() {
+      document.getElementById('priority-selection').classList.add('hidden');
+      document.getElementById('service-selection').classList.remove('hidden');
+      document.getElementById('senha-display').classList.add('hidden');
+    }
+
+    function generateTicket(service, priority) {
+      try {
+        let ticketCode = null;
+        if (priority === 'NORMAL') {
+          const ticket = BankFlowSim.issueTicket(BankFlowSim.TYPES.NORMAL, { source: "Totem Simulado", category: service });
+          ticketCode = ticket.code;
+        } else {
+          const ticket = BankFlowSim.issueTicket(BankFlowSim.TYPES.PRIORITARIO, { source: "Totem Simulado", category: priority });
+          ticketCode = ticket.code;
+        }
+
+        document.getElementById('service-selection').classList.add('hidden');
+        document.getElementById('priority-selection').classList.add('hidden');
+
+        const senhaDisplay = document.getElementById('senha-display');
+        senhaDisplay.classList.remove('hidden');
+        senhaDisplay.textContent = ticketCode;
+
+        setTimeout(resetSelections, 5000);
+
+      } catch (error) {
+        console.error(error);
+        alert('Erro na simulação local.');
+        resetSelections();
+      }
+    }
+
+    function resetSelections() {
+      selectedService = null;
+      document.querySelectorAll('.service-button').forEach(b => b.classList.remove('selected'));
+
+      document.getElementById('senha-display').classList.add('hidden');
+      document.getElementById('priority-selection').classList.add('hidden');
+      document.getElementById('service-selection').classList.remove('hidden');
+      resetInactivityTimer();
+    }
+
+    let inactivityTimer;
+    function resetInactivityTimer() {
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(resetSelections, 30000);
+    }
+
+    document.addEventListener('click', resetInactivityTimer);
+    document.addEventListener('touchstart', resetInactivityTimer);
+    resetInactivityTimer();
+
+  </script>
+</body>
+
+</html>

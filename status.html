@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Status do Sistema - BankFlow Simulador</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Asap:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="sim-core.js"></script>
+  <style>
+    body {
+      font-family: 'Asap', sans-serif;
+      background-color: #f8f9fa;
+    }
+
+    .sim-banner {
+      background: #c9d200;
+      color: #101214;
+      text-align: center;
+      padding: 8px 14px;
+      font-weight: 700;
+      font-size: 13px;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .sim-banner a {
+      color: #101214;
+      text-decoration: underline;
+      font-weight: bold;
+    }
+
+    .status-card {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s;
+    }
+
+    .status-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .status-icon {
+      font-size: 2rem;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      margin-right: 15px;
+    }
+
+    .bg-success-light {
+      background-color: #d1e7dd;
+      color: #0f5132;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="sim-banner">
+    <span>⚙️ SIMULAÇÃO APROXIMADA: Muitas outras funções operacionais podem ser vistas pelas imagens no repositório
+      público. <a href="https://www.linkedin.com/in/matheus-b-ribeiro/" target="_blank">Contato do
+        Desenvolvedor</a></span>
+    <a href="index.html" style="margin-left: 20px;">🏠 Hub</a>
+  </div>
+
+  <div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2 class="fw-bold mb-1" style="color: #003641;">
+          <i class="fas fa-heartbeat me-2" style="color: #00AE9D;"></i>Status dos Serviços (Simulados)
+        </h2>
+        <p class="text-muted mb-0">Monitoramento da infraestrutura frontend (sim-core.js)</p>
+      </div>
+      <div class="text-end">
+        <span class="badge bg-success p-2 fs-6 mb-2">
+          <i class="fas fa-check-circle me-1"></i> Todos os serviços operacionais
+        </span>
+        <div><small class="text-muted">Última verificação: <span id="lastCheckTime">--:--:--</span></small></div>
+      </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+      <div class="col-md-6 col-lg-4">
+        <div class="card status-card h-100">
+          <div class="card-body p-4 d-flex align-items-center">
+            <div class="status-icon bg-success-light">
+              <i class="fas fa-database"></i>
+            </div>
+            <div>
+              <h5 class="fw-bold mb-1">LocalStorage DB</h5>
+              <p class="text-success mb-0"><i class="fas fa-check me-1"></i> Operacional</p>
+              <small class="text-muted" id="dbSizeText">Uso: ~0KB / 5MB</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="card status-card h-100">
+          <div class="card-body p-4 d-flex align-items-center">
+            <div class="status-icon bg-success-light">
+              <i class="fas fa-broadcast-tower"></i>
+            </div>
+            <div>
+              <h5 class="fw-bold mb-1">Sim-Core PubSub</h5>
+              <p class="text-success mb-0"><i class="fas fa-check me-1"></i> Operacional</p>
+              <small class="text-muted">Eventos em tempo real ativos</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="card status-card h-100">
+          <div class="card-body p-4 d-flex align-items-center">
+            <div class="status-icon bg-success-light">
+              <i class="fas fa-desktop"></i>
+            </div>
+            <div>
+              <h5 class="fw-bold mb-1">Compatibilidade Browser</h5>
+              <p class="text-success mb-0"><i class="fas fa-check me-1"></i> Operacional</p>
+              <small class="text-muted">Suporte a JS Moderno OK</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+      <div class="card-header bg-white border-0 pt-4 pb-0 px-4">
+        <h5 class="fw-bold" style="color: #003641;">Logs do Simulador</h5>
+      </div>
+      <div class="card-body p-4">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead>
+              <tr>
+                <th>Data/Hora</th>
+                <th>Serviço</th>
+                <th>Evento</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="logsTable">
+              <tr>
+                <td colspan="4" class="text-center text-muted">Carregando logs...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function updateStatus() {
+      const d = new Date();
+      document.getElementById('lastCheckTime').textContent = d.toLocaleTimeString('pt-BR');
+
+      // Estimate localstorage size
+      let _lsTotal = 0, _xLen, _x;
+      for (_x in localStorage) {
+        if (!localStorage.hasOwnProperty(_x)) { continue; }
+        _xLen = ((localStorage[_x].length + _x.length) * 2);
+        _lsTotal += _xLen;
+      }
+      document.getElementById('dbSizeText').textContent = `Uso: ${(_lsTotal / 1024).toFixed(2)} KB / 5000 KB`;
+
+      const state = BankFlowSim.loadState();
+      const tbody = document.getElementById('logsTable');
+
+      if (state.events && state.events.length > 0) {
+        tbody.innerHTML = '';
+        state.events.slice(0, 10).forEach(ev => {
+          const tr = document.createElement('tr');
+          const time = new Date(ev.timestamp).toLocaleTimeString('pt-BR');
+          tr.innerHTML = `
+                    <td>${time}</td>
+                    <td><span class="badge bg-secondary">${ev.channel}</span></td>
+                    <td>${ev.message}</td>
+                    <td><span class="badge bg-success">Sucesso</span></td>
+                `;
+          tbody.appendChild(tr);
+        });
+      } else {
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Nenhum evento registrado ainda.</td></tr>';
+      }
+    }
+
+    setInterval(updateStatus, 5000);
+    updateStatus();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,9 @@
+﻿<!-- Placeholder para vídeo institucional -->
+<!-- 
+Para adicionar um vídeo:
+1. Coloque o arquivo .mp4 nesta pasta
+2. Nomeie como: BankFlow-institucional.mp4
+3. O player irá detectar automaticamente
+-->
+
+Adicione seus vídeos MP4 aqui!

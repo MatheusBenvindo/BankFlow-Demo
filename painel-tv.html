@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Senhas - BankFlow (Simulação)</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+  <link rel="stylesheet" as="style" onload="this.rel='stylesheet'"
+    href="https://fonts.googleapis.com/css2?family=Asap:wght@400;500;600;700;800&family=Asap+Condensed:wght@400;500;600;700">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="sim-core.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body,
+    html {
+      font-family: 'Asap', sans-serif !important;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    .sim-banner {
+      background: #c9d200;
+      color: #101214;
+      text-align: center;
+      padding: 8px 14px;
+      font-weight: 700;
+      font-size: 13px;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    .sim-banner a {
+      color: #101214;
+      text-decoration: underline;
+      font-weight: bold;
+    }
+
+    #senhaAtual {
+      animation: pulse 2s infinite;
+      font-size: clamp(2rem, 6vw, 4rem);
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      50% {
+        transform: scale(1.05);
+        opacity: 0.95;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .new-ticket {
+      animation: slideIn 0.5s ease;
+    }
+
+    .bg-brand-green {
+      background-color: #00AE9D;
+    }
+
+    .bg-brand-dark {
+      background-color: #003641;
+    }
+
+    .bg-brand-purple {
+      background-color: #49479D;
+    }
+
+    .bg-brand-yellow {
+      background-color: #C9D200;
+    }
+
+    .text-brand-green {
+      color: #00AE9D;
+    }
+
+    .text-brand-dark {
+      color: #003641;
+    }
+
+    .text-brand-purple {
+      color: #49479D;
+    }
+
+    .text-brand-yellow {
+      color: #C9D200;
+    }
+
+    .border-brand-green {
+      border-color: #00AE9D;
+    }
+
+    .border-brand-dark {
+      border-color: #003641;
+    }
+
+    .history-section {
+      transition: all 0.4s ease-in-out;
+    }
+
+    .history-section.hidden {
+      display: none !important;
+    }
+
+    .attendant-highlight {
+      font-weight: 700 !important;
+      font-size: 1rem !important;
+    }
+
+    .station-highlight {
+      font-weight: 700 !important;
+      font-size: 1rem !important;
+    }
+
+    .smooth-transition {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .tv-main-left {
+      display: grid;
+      grid-template-rows: minmax(280px, 62%) minmax(180px, 38%);
+      gap: 10px;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .tv-video-wrap {
+      min-height: 0;
+    }
+
+    .tv-news-wrap {
+      min-height: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #news-container {
+      overflow-x: auto;
+      overflow-y: hidden;
+      min-height: 0;
+    }
+
+    #callPopup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 99999;
+      background: rgba(0, 54, 65, 0.94);
+      border: 2px solid #00AE9D;
+      border-radius: 18px;
+      padding: 22px 28px;
+      text-align: center;
+      min-width: 360px;
+      max-width: min(86vw, 680px);
+      box-shadow: 0 20px 44px rgba(0, 0, 0, 0.45);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease;
+    }
+
+    #callPopup.show {
+      opacity: 1;
+    }
+
+    @media (max-height: 820px) {
+      .tv-main-left {
+        grid-template-rows: minmax(220px, 58%) minmax(160px, 42%);
+      }
+
+      #callPopup {
+        min-width: 320px;
+        padding: 16px 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="relative flex h-screen w-screen flex-col bg-brand-dark overflow-hidden">
+    <div class="sim-banner">
+      <span>⚙️ SIMULAÇÃO APROXIMADA: Muitas outras funções operacionais podem ser vistas pelas imagens no repositório
+        público. <a href="https://www.linkedin.com/in/matheus-b-ribeiro/" target="_blank">Contato do
+          Desenvolvedor</a></span>
+      <a href="index.html" style="margin-left: 20px;">🏠 Voltar ao Hub</a>
+    </div>
+    <div class="layout-container flex h-full grow flex-col">
+      <header
+        class="flex items-center justify-between whitespace-nowrap border-b border-solid border-brand-green px-10 py-3">
+        <div class="flex items-center gap-4 text-white">
+          <div class="size-16">
+            <div class="w-full h-full bg-brand-green rounded-lg flex items-center justify-center"
+              style="background: linear-gradient(135deg, #00AE9D, #003641);">
+            </div>
+          </div>
+          <div>
+            <h2 class="text-white text-2xl font-bold leading-tight tracking-[-0.015em]">
+              Sistema de Senhas BankFlow
+            </h2>
+            <p class="text-brand-green text-lg font-normal leading-normal">
+              Painel de Senhas (Simulação Local)
+            </p>
+          </div>
+        </div>
+        <div class="flex flex-1 justify-end gap-8">
+          <div class="flex flex-col items-end justify-center">
+            <p id="currentTime" class="text-white text-3xl font-bold leading-tight tracking-[-0.015em]">
+              --:--
+            </p>
+            <p id="currentDate" class="text-brand-green text-base font-normal leading-normal">
+              --
+            </p>
+          </div>
+        </div>
+      </header>
+
+      <div class="gap-1 px-6 flex flex-1 py-5 h-full overflow-hidden">
+        <div class="layout-content-container w-2/3 flex-1 tv-main-left">
+          <div class="p-2 tv-video-wrap">
+            <div class="relative bg-black rounded-lg overflow-hidden h-full">
+              <div id="videoFallback"
+                class="absolute inset-0 flex items-center justify-center bg-gradient-to-r from-brand-green to-brand-purple">
+                <div class="text-center text-white p-8">
+                  <h2 class="text-4xl font-bold mb-4">Bem-vindos ao BankFlow</h2>
+                  <p class="text-xl opacity-90">Seu atendimento é nossa prioridade</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tv-news-wrap [-ms-scrollbar-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div id="news-container" class="flex items-stretch p-2 gap-3">
+              <!-- Loading placeholder replaced by JS -->
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="layout-content-container flex flex-col w-1/3 bg-brand-dark bg-opacity-50 rounded-lg p-3 h-full overflow-hidden"
+          style="display:grid; grid-template-rows: auto 1fr 1fr; gap:8px; overflow:hidden;">
+
+          <!-- Senha Atual — altura fixa limitada -->
+          <div
+            class="text-center bg-gradient-to-r from-brand-green to-brand-purple rounded-lg p-3 smooth-transition shadow-lg"
+            style="min-height:0; overflow:hidden;">
+            <h2 class="text-white text-xl font-bold leading-tight pb-1">
+              SENHA ATUAL
+            </h2>
+            <h1 id="senhaAtual" class="text-white font-bold leading-tight pb-1 break-words">
+              --
+            </h1>
+            <div id="serviceInfo" class="text-white text-sm font-normal leading-normal opacity-90 mb-1">
+              Aguardando próxima senha...
+            </div>
+            <div id="attendantInfo" class="bg-black bg-opacity-20 rounded-lg p-2 text-white smooth-transition"
+              style="display: none;">
+              <div class="flex items-center justify-center gap-2 mb-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14px" height="14px" fill="currentColor"
+                  viewBox="0 0 256 256">
+                  <path
+                    d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.84,8c18.84-32.56,52.14-52,89.08-52s70.24,19.44,89.08,52a8,8,0,1,0,13.84-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z">
+                  </path>
+                </svg>
+                <span id="attendantName" class="attendant-highlight text-sm">--</span>
+              </div>
+              <div class="flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14px" height="14px" fill="currentColor"
+                  viewBox="0 0 256 256">
+                  <path
+                    d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z">
+                  </path>
+                </svg>
+                <span id="stationInfo" class="station-highlight text-sm">--</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Prioritários — ocupa metade do espaço restante -->
+          <div class="flex flex-col min-h-0 bg-black bg-opacity-10 rounded-lg p-2 overflow-hidden">
+            <h2 class="text-white text-base font-bold leading-tight pb-1 text-center shrink-0">
+              &#x1F680; Fila Prioritária
+            </h2>
+            <div id="priorityQueue" class="flex flex-col space-y-1 overflow-y-auto flex-1 min-h-0 pr-1">
+            </div>
+          </div>
+
+          <!-- Normal — ocupa a outra metade -->
+          <div class="flex flex-col min-h-0 bg-black bg-opacity-10 rounded-lg p-2 overflow-hidden">
+            <h2 class="text-white text-base font-bold leading-tight pb-1 text-center shrink-0">
+              &#x23F3; Fila Normal
+            </h2>
+            <div id="normalQueue" class="flex flex-col space-y-1 overflow-y-auto flex-1 min-h-0 pr-1">
+            </div>
+          </div>
+
+          <!-- Histórico (hidden por padrão) -->
+          <div id="historySection" class="history-section hidden" style="display:none">
+            <h2 class="text-white text-base font-bold leading-tight pb-1 text-center">
+              &#x1F4CB; Últimas Chamadas
+            </h2>
+            <div id="lastCalledList" class="flex flex-col space-y-1 overflow-y-auto pr-1">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Sound (Base64 from original) -->
+  <audio id="notificationSound" preload="auto">
+    <source
+      src="data:audio/wav;base64,UklGRpYGAABXQVZFZm10IAAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEcCEiq4fCuYRwGOJHX8sxwKwUpX7Tv16FDDAplsOPwr2EcBziR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEcCEiq4fCuYRwGOJHX8sxwKwUpX7Tv16FDDAplsOPwr2EcBziR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEcCEiq4fCuYRwGOJHX8sxwKwUpX7Tv16FDDAplsOPwr2EcBziR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEcCEiq4fCuYRwGOJHX8sxwKwUpX7Tv16FDDAplsOPwr2EcBziR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEcCEiq4fCuYRwGOJHX8sxwKwUpX7Tv16FDDAplsOPwr2EcBziR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEcCEiq4fCuYRwGOJHX8sxwKwUpX7Tv16FDDAplsOPwr2EcBziR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEcCEiq4fCuYRwGOJHX8sxwKwUpX7Tv16FDDAplsOPwr2EcBziR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEcCEiq4fCuYRwGOJHX8sxwKwUpX7Tv16FDDAplsOPwr2EcBziR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEcCEiq4fCuYRwGOJHX8sxwKwUpX7Tv16FDDAplsOPw="
+      type="audio/wav">
+  </audio>
+
+  <div id="callPopup" aria-live="polite">
+    <div class="text-white text-sm opacity-80 mb-1">Nova senha chamada</div>
+    <div id="callPopupSenha" class="text-white font-bold" style="font-size: clamp(1.8rem, 4vw, 3rem);">--</div>
+    <div id="callPopupDestino" class="text-brand-green text-lg mt-2">--</div>
+  </div>
+
+  <script>
+    "use strict";
+
+    const serviceNames = {
+      'ATEND_PF': 'Atendimento PF',
+      'ATEND_PJ': 'Atendimento PJ',
+      'CAIXA': 'Caixa',
+      'GERENTE': 'Gerente',
+      'SEGUROS': 'Seguros'
+    };
+
+    const priorityNames = {
+      'NORMAL': 'Normal',
+      '60+': 'Prioridade 60+',
+      '80+': 'Prioridade 80+',
+      'CRIANCA_COLO': 'Criança de Colo',
+      'GESTANTE': 'Gestante',
+      'LACTANTE': 'Lactante',
+      'PORTADOR_DEFICIENCIA': 'Portador de Deficiência',
+      'PREFERENCIAL': 'Prioridade'
+    };
+
+    function formatarSenhaDisplay(numeroSenha, categoria, tipo) {
+      const ehPreferencial = tipo === 'PRIORITARIO';
+      const nomeServico = serviceNames[categoria] || categoria || 'Atendimento';
+      return {
+        displayText: `${numeroSenha} - ${nomeServico}`,
+        displayTextLongo: ehPreferencial ?
+          `Preferencial ${numeroSenha} - ${nomeServico}` :
+          `Normal ${numeroSenha} - ${nomeServico}`
+      };
+    }
+
+    function getPriorityColors(type) {
+      if (['60+', '80+', 'CRIANCA_COLO', 'GESTANTE', 'LACTANTE', 'PORTADOR_DEFICIENCIA', 'PREFERENCIAL'].includes(type) || type === 'PRIORITARIO') {
+        return { bg: 'bg-brand-purple bg-opacity-20 border-brand-purple', icon: 'text-brand-purple bg-brand-purple bg-opacity-20' };
+      }
+      return { bg: 'bg-brand-green bg-opacity-20 border-brand-green', icon: 'text-brand-green bg-brand-green bg-opacity-20' };
+    }
+
+    function createQueueItem(senha, isHistory = false) {
+      const item = document.createElement("div");
+      const formatada = formatarSenhaDisplay(senha.code, senha.category, senha.type);
+      const colors = getPriorityColors(senha.type);
+
+      item.className = `flex items-center gap-4 ${colors.bg} border rounded-lg px-4 py-3 smooth-transition ${isHistory ? 'new-ticket' : ''}`;
+      item.innerHTML = `<div class="${colors.icon} flex items-center justify-center rounded-lg shrink-0 size-12"><svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24ZM74.08,197.5a64,64,0,0,1,107.84,0,87.83,87.83,0,0,1-107.84,0ZM96,120a32,32,0,1,1,32,32A32,32,0,0,1,96,120Zm97.76,66.41a79.66,79.66,0,0,0-36.06-28.75,48,48,0,1,0-59.4,0,79.66,79.66,0,0,0-36.06,28.75,88,88,0,1,1,131.52,0Z"></path></svg></div><div class="flex flex-col justify-center"><p class="text-white text-sm font-bold">${formatada.displayText}</p><p class="text-white text-xs opacity-60">${formatada.displayTextLongo}</p></div>`;
+      return item;
+    }
+
+    function createEmptyItem(message, colors) {
+      const item = document.createElement("div");
+      item.className = `flex items-center gap-4 ${colors.bg} border rounded-lg px-4 py-3 smooth-transition`;
+      item.innerHTML = `<div class="${colors.icon} flex items-center justify-center rounded-lg shrink-0 size-12"><svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24ZM74.08,197.5a64,64,0,0,1,107.84,0,87.83,87.83,0,0,1-107.84,0ZM96,120a32,32,0,1,1,32,32A32,32,0,0,1,96,120Zm97.76,66.41a79.66,79.66,0,0,0-36.06-28.75,48,48,0,1,0-59.4,0,79.66,79.66,0,0,0-36.06,28.75,88,88,0,1,1,131.52,0Z"></path></svg></div><div class="flex flex-col justify-center"><p class="text-white text-sm font-normal">${message}</p></div>`;
+      return item;
+    }
+
+    let popupTimer = null;
+    function showCallPopup(senha) {
+      const popup = document.getElementById('callPopup');
+      const senhaEl = document.getElementById('callPopupSenha');
+      const destinoEl = document.getElementById('callPopupDestino');
+
+      const formatada = formatarSenhaDisplay(senha.code, senha.category, senha.type);
+      senhaEl.textContent = formatada.displayText;
+      destinoEl.textContent = `${senha.attendant || 'Atendente'} • ${senha.guiche || 'Mesa'}`;
+
+      popup.classList.add('show');
+      if (popupTimer) clearTimeout(popupTimer);
+      popupTimer = setTimeout(() => popup.classList.remove('show'), 5000);
+
+      try {
+        const sound = document.getElementById("notificationSound");
+        sound.currentTime = 0;
+        sound.volume = 0.5;
+        sound.play().catch(e => console.log('Audio autoplay blocked', e));
+
+        if ('speechSynthesis' in window) { // Fake voice
+          speechSynthesis.cancel();
+          const u = new SpeechSynthesisUtterance(`Senha ${senha.code.replace('-', ' ')}, guichê ${senha.guiche}`);
+          u.lang = 'pt-BR';
+          u.rate = 0.9;
+          speechSynthesis.speak(u);
+        }
+      } catch (e) { }
+    }
+
+    function updateDateTime() {
+      const now = new Date();
+      document.getElementById('currentTime').textContent = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('currentDate').textContent = now.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    function renderNews() {
+      const newsContainer = document.getElementById('news-container');
+      const state = BankFlowSim.loadState();
+      const news = [
+        { t: "Bem-vindo ao BankFlow Simulador", d: "Experimente a nossa solução completa de gestão de filas." },
+        { t: "Notícia Financeira (Simulada)", d: "Acompanhe atualizações sobre mercado geradas no cliente." },
+        { t: "Aviso de Sistema", d: state.events.length > 0 ? state.events[0].message : "Sistema operando normalmente." }
+      ];
+
+      const gradients = ['from-brand-green to-brand-dark', 'from-brand-purple to-brand-dark', 'from-brand-yellow to-brand-green'];
+      newsContainer.innerHTML = '';
+
+      news.forEach((n, i) => {
+        const bg = gradients[i % gradients.length];
+        newsContainer.innerHTML += `
+                    <div class="flex h-full flex-1 flex-col gap-2 rounded-lg min-w-[260px] max-w-[360px]">
+                        <div class="w-full bg-gradient-to-br ${bg} aspect-video rounded-lg overflow-hidden flex items-center justify-center text-white text-4xl">📰</div>
+                        <div class="p-2">
+                             <h3 class="text-white text-lg font-bold mb-2 leading-tight">${n.t}</h3>
+                             <p class="text-white text-sm opacity-90 leading-relaxed">${n.d}</p>
+                        </div>
+                    </div>
+                `;
+      });
+    }
+
+    // Sim Core Subscription
+    let lastRenderedServingId = null;
+
+    function handleStateChange(state) {
+      // Update Queues
+      const priQueue = document.getElementById("priorityQueue");
+      const normQueue = document.getElementById("normalQueue");
+
+      priQueue.innerHTML = '';
+      const prioritarias = state.queue.filter(t => t.type === 'PRIORITARIO');
+      if (prioritarias.length > 0) {
+        prioritarias.slice(0, 8).forEach(s => priQueue.appendChild(createQueueItem(s)));
+      } else {
+        priQueue.appendChild(createEmptyItem("Nenhuma senha prioritária", getPriorityColors('PRIORITARIO')));
+      }
+
+      normQueue.innerHTML = '';
+      const normais = state.queue.filter(t => t.type === 'NORMAL');
+      if (normais.length > 0) {
+        normais.slice(0, 8).forEach(s => normQueue.appendChild(createQueueItem(s)));
+      } else {
+        normQueue.appendChild(createEmptyItem("Nenhuma senha normal", getPriorityColors('NORMAL')));
+      }
+
+      // Update Serving & Handle Notification if changed
+      if (state.serving) {
+        if (state.serving.id !== lastRenderedServingId) {
+          lastRenderedServingId = state.serving.id;
+          showCallPopup(state.serving);
+        }
+
+        const formatada = formatarSenhaDisplay(state.serving.code, state.serving.category, state.serving.type);
+        document.getElementById("senhaAtual").textContent = formatada.displayText;
+
+        const sText = serviceNames[state.serving.category] || state.serving.category || 'Atendimento Geral';
+        const pText = priorityNames[state.serving.category] || '';
+        document.getElementById("serviceInfo").textContent = `${sText}${pText && state.serving.type === 'PRIORITARIO' ? ' - ' + pText : ''}`;
+
+        document.getElementById("attendantInfo").style.display = 'block';
+        document.getElementById("attendantName").textContent = state.serving.attendant || 'Atendente';
+        document.getElementById("stationInfo").textContent = state.serving.guiche || 'Guichê';
+      } else {
+        lastRenderedServingId = null;
+        document.getElementById("attendantInfo").style.display = 'none';
+        document.getElementById("senhaAtual").textContent = '--';
+        document.getElementById("serviceInfo").textContent = 'Aguardando próxima senha...';
+      }
+
+      // History
+      const historyList = document.getElementById("lastCalledList");
+      const historySection = document.getElementById("historySection");
+      historyList.innerHTML = '';
+      if (state.history.length > 0) {
+        state.history.slice(0, 5).forEach(h => historyList.appendChild(createQueueItem(h, true)));
+        historySection.classList.remove('hidden');
+      } else {
+        historySection.classList.add('hidden');
+      }
+    }
+
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+    renderNews();
+    BankFlowSim.subscribe(handleStateChange);
+    handleStateChange(BankFlowSim.loadState());
+
+  </script>
+</body>
+
+</html>

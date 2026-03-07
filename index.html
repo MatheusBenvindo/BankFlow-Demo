@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BankFlow Simulado - Inicio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Asap:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="sim-style.css" />
+</head>
+
+<body>
+  <div class="sim-banner">SIMULAÇÃO APROXIMADA: Muitas outras funções operacionais devem ser vistas pelas imagens no
+    repositório público.</div>
+  <nav class="top-nav">
+    <a href="totem.html">Totem</a>
+    <a href="painel-tv.html">Painel TV</a>
+    <a href="atendente-web.html">Atendente Web</a>
+    <a href="gerenciamento.html">Gerenciamento + BI</a>
+    <a href="status.html">Status/Saude</a>
+  </nav>
+
+  <main class="container grid cols-3">
+    <section class="card">
+      <div class="app-header">
+        <div>
+          <p class="app-name">BankFlow Queue - Demo Publica</p>
+          <p class="app-subtitle">Simulacao operacional multiplos paineis</p>
+        </div>
+        <span class="status-pill">Modo Vitrine</span>
+      </div>
+      <p class="muted">Vitrine sem backend real: interfaces conectadas por simulacao local do fluxo Totem -> Hub ->
+        Atendente -> TV -> BI.</p>
+      <div class="actions" style="margin-top: 10px;">
+        <button class="primary" id="genNormal">Gerar N</button>
+        <button id="genPriority">Gerar P</button>
+        <button id="call">Chamar</button>
+        <button id="finish">Finalizar</button>
+        <button id="autoToggle">Iniciar auto fluxo</button>
+      </div>
+    </section>
+
+    <section class="card kpi">
+      <span class="muted">Fila</span>
+      <span class="metric" id="queue">0</span>
+    </section>
+    <section class="card kpi">
+      <span class="muted">Atendendo</span>
+      <span class="metric" id="serving">--</span>
+    </section>
+    <section class="card kpi">
+      <span class="muted">Tempo medio</span>
+      <span class="metric" id="avgWait">0s</span>
+    </section>
+  </main>
+
+  <main class="container grid cols-2">
+    <section class="card">
+      <h3>Fluxo do sistema real</h3>
+      <ul class="list">
+        <li><strong>1. Totem</strong><span>Emite N/P com categoria prioritaria</span></li>
+        <li><strong>2. SignalR (simulado)</strong><span>Dispara eventos de fila e chamada</span></li>
+        <li><strong>3. Atendente</strong><span>Chama, pula e finaliza</span></li>
+        <li><strong>4. Painel TV</strong><span>Exibe senha atual + historico + midia</span></li>
+        <li><strong>5. Gerenciamento/BI</strong><span>KPIs, ranking e volumetria</span></li>
+        <li><strong>6. Status</strong><span>Saude de componentes simulados</span></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h3>Fila atual</h3>
+      <ul class="list" id="queueList"></ul>
+      <div class="actions" style="margin-top: 10px;">
+        <button class="danger" id="reset">Resetar simulacao</button>
+      </div>
+    </section>
+
+    <section class="card" style="grid-column: 1 / -1;">
+      <h3>Feed de eventos (hub simulado)</h3>
+      <ul class="list" id="eventList"></ul>
+    </section>
+  </main>
+
+  <script src="sim-core.js"></script>
+  <script>
+    BankFlowSim.seedDemoData();
+
+    const queue = document.getElementById("queue");
+    const serving = document.getElementById("serving");
+    const avgWait = document.getElementById("avgWait");
+    const queueList = document.getElementById("queueList");
+    const eventList = document.getElementById("eventList");
+    const autoToggle = document.getElementById("autoToggle");
+
+    let autoIssueId = null;
+    let autoServiceId = null;
+    let autoRunning = false;
+
+    function stopAuto() {
+      if (autoIssueId) clearInterval(autoIssueId);
+      if (autoServiceId) clearInterval(autoServiceId);
+      autoIssueId = null;
+      autoServiceId = null;
+      autoRunning = false;
+      autoToggle.textContent = "Iniciar auto fluxo";
+    }
+
+    function startAuto() {
+      stopAuto();
+      autoIssueId = setInterval(() => BankFlowSim.autoIssueStep(), 5000);
+      autoServiceId = setInterval(() => BankFlowSim.autoServiceStep(), 7000);
+      autoRunning = true;
+      autoToggle.textContent = "Parar auto fluxo";
+    }
+
+    function render(state) {
+      queue.textContent = state.queue.length;
+      serving.textContent = state.serving ? state.serving.code : "--";
+      avgWait.textContent = `${state.averageWaitSec}s`;
+
+      queueList.innerHTML = "";
+      state.queue.forEach((item) => {
+        const li = document.createElement("li");
+        li.innerHTML = `<span>${item.code}</span><span class="badge ${item.type === "PRIORITARIO" ? "priority" : ""}">${item.type}</span>`;
+        queueList.appendChild(li);
+      });
+
+      if (state.queue.length === 0) {
+        const li = document.createElement("li");
+        li.textContent = "Fila vazia";
+        queueList.appendChild(li);
+      }
+
+      eventList.innerHTML = "";
+      state.events.slice(0, 8).forEach((event) => {
+        const li = document.createElement("li");
+        li.innerHTML = `<strong>[${event.channel}]</strong><span>${event.message}</span>`;
+        eventList.appendChild(li);
+      });
+      if (state.events.length === 0) {
+        const li = document.createElement("li");
+        li.textContent = "Sem eventos ainda";
+        eventList.appendChild(li);
+      }
+    }
+
+    document.getElementById("genNormal").addEventListener("click", () => BankFlowSim.issueTicket(BankFlowSim.TYPES.NORMAL));
+    document.getElementById("genPriority").addEventListener("click", () => {
+      const cats = BankFlowSim.PRIORITY_CATEGORIES;
+      const category = cats[Math.floor(Math.random() * cats.length)];
+      BankFlowSim.issueTicket(BankFlowSim.TYPES.PRIORITARIO, { category, source: "Inicio" });
+    });
+    document.getElementById("call").addEventListener("click", () => BankFlowSim.callNext({ attendant: "Supervisor", guiche: "Guiche 01" }));
+    document.getElementById("finish").addEventListener("click", () => BankFlowSim.finishCurrent());
+    document.getElementById("reset").addEventListener("click", () => {
+      stopAuto();
+      BankFlowSim.resetAll();
+    });
+    autoToggle.addEventListener("click", () => {
+      if (autoRunning) stopAuto();
+      else startAuto();
+    });
+
+    BankFlowSim.subscribe(render);
+    render(BankFlowSim.loadState());
+  </script>
+</body>
+
+</html>

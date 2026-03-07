@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BankFlow Simulado - Atendente Desktop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Asap:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="sim-style.css" />
+</head>
+
+<body>
+    <div class="sim-banner">SIMULAÇÃO APROXIMADA: Muitas outras funções operacionais devem ser vistas pelas imagens no
+        repositório público.</div>
+    <nav class="top-nav">
+        <a href="index.html">Inicio</a>
+        <a href="totem.html">Totem</a>
+        <a href="painel-tv.html">Painel TV</a>
+        <a href="atendente-web.html">Atendente Web</a>
+        <a href="gerenciamento.html">Gerenciamento + BI</a>
+        <a href="status.html">Status/Saude</a>
+    </nav>
+
+    <main class="container">
+        <section class="card">
+            <div class="app-header">
+                <div>
+                    <p class="app-name">Painel Atendente Desktop</p>
+                    <p class="app-subtitle">WebView2 simulado com notificacoes toast</p>
+                </div>
+                <span class="status-pill">Guiche local</span>
+            </div>
+            <p class="muted">Barra flutuante e notificacao estilo toast para chegada de demanda.</p>
+        </section>
+
+        <section class="card" style="margin-top: 12px;">
+            <div class="actions" style="margin-bottom: 8px;">
+                <input id="attendantName" class="input" value="Matheus" />
+                <select id="guiche" class="input">
+                    <option>Guiche 01</option>
+                    <option>Guiche 02</option>
+                    <option selected>Guiche 03</option>
+                </select>
+            </div>
+
+            <div class="actions">
+                <button class="primary" id="callBtn">Chamar proxima</button>
+                <button id="skipBtn">Pular atual</button>
+                <button id="finishBtn">Finalizar atendimento</button>
+            </div>
+
+            <div class="grid cols-2" style="margin-top: 12px;">
+                <div class="card">
+                    <h3>Fila</h3>
+                    <div class="metric" id="queueCount">0</div>
+                </div>
+                <div class="card">
+                    <h3>Atendimento atual</h3>
+                    <div class="ticket" id="servingCode">--</div>
+                </div>
+            </div>
+
+            <div class="grid cols-2" style="margin-top: 10px;">
+                <div class="card">
+                    <h3>Proximas senhas</h3>
+                    <ul class="list" id="queueList"></ul>
+                </div>
+                <div class="card">
+                    <h3>Eventos do hub</h3>
+                    <ul class="list" id="events"></ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="toast" id="toast">
+        <strong>BankFlow Desktop</strong>
+        <div class="muted" id="toastMessage">Aguardando eventos.</div>
+    </div>
+
+    <script src="sim-core.js"></script>
+    <script>
+        const queueCount = document.getElementById("queueCount");
+        const servingCode = document.getElementById("servingCode");
+        const queueList = document.getElementById("queueList");
+        const events = document.getElementById("events");
+        const toast = document.getElementById("toast");
+        const toastMessage = document.getElementById("toastMessage");
+
+        let lastQueue = 0;
+
+        function showToast(message) {
+            toastMessage.textContent = message;
+            toast.classList.add("show");
+            setTimeout(() => toast.classList.remove("show"), 2500);
+        }
+
+        function render(state) {
+            queueCount.textContent = state.queue.length;
+            servingCode.textContent = state.serving ? `${state.serving.code} - ${state.serving.guiche}` : "Sem atendimento";
+
+            queueList.innerHTML = "";
+            state.queue.slice(0, 5).forEach((item) => {
+                const li = document.createElement("li");
+                li.innerHTML = `<span>${item.code}</span><span class="badge ${item.type === "PRIORITARIO" ? "priority" : ""}">${item.category}</span>`;
+                queueList.appendChild(li);
+            });
+            if (state.queue.length === 0) {
+                const li = document.createElement("li");
+                li.textContent = "Fila vazia";
+                queueList.appendChild(li);
+            }
+
+            events.innerHTML = "";
+            state.events.slice(0, 5).forEach((event) => {
+                const li = document.createElement("li");
+                li.innerHTML = `<strong>${event.channel}</strong><span>${event.message}</span>`;
+                events.appendChild(li);
+            });
+            if (state.events.length === 0) {
+                const li = document.createElement("li");
+                li.textContent = "Sem eventos";
+                events.appendChild(li);
+            }
+
+            if (state.queue.length > lastQueue && !state.serving) {
+                showToast("Nova senha na fila. Clique em Chamar proxima.");
+            }
+            lastQueue = state.queue.length;
+        }
+
+        document.getElementById("callBtn").addEventListener("click", () => {
+            const result = BankFlowSim.callNext({
+                attendant: document.getElementById("attendantName").value || "Atendente Desktop",
+                guiche: document.getElementById("guiche").value
+            });
+            if (result) showToast(`Senha ${result.code} chamada.`);
+            else showToast("Nao foi possivel chamar (fila vazia ou atendimento em curso).");
+            render(BankFlowSim.loadState());
+        });
+
+        document.getElementById("skipBtn").addEventListener("click", () => {
+            const result = BankFlowSim.skipCurrent();
+            showToast(result ? `Senha ${result.code} pulada.` : "Nao ha senha em atendimento.");
+            render(BankFlowSim.loadState());
+        });
+
+        document.getElementById("finishBtn").addEventListener("click", () => {
+            const result = BankFlowSim.finishCurrent();
+            showToast(result ? `Senha ${result.code} finalizada.` : "Nao ha senha em atendimento.");
+            render(BankFlowSim.loadState());
+        });
+
+        BankFlowSim.subscribe(render);
+        render(BankFlowSim.loadState());
+    </script>
+</body>
+
+</html>
