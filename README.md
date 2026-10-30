@@ -1,3 +1,12 @@
+<!-- course-navigation:start -->
+<p>
+  <a href="https://github.com/MatheusBenvindo/MatheusBenvindo/blob/main/CURSOS.md#projetos"><img alt="Índice de materiais" src="https://img.shields.io/badge/MATERIAIS-Projetos-005DAA?style=flat-square" /></a>
+</p>
+
+[← Catálogo de cursos e projetos](https://github.com/MatheusBenvindo/MatheusBenvindo/blob/main/CURSOS.md) · [Perfil](https://github.com/MatheusBenvindo)
+
+<!-- course-navigation:end -->
+
 # BankFlow Queue System
 
 Sistema de gestão de filas projetado para operação local em agência, com foco em custo total de propriedade, continuidade de atendimento e inteligência operacional.
@@ -121,3 +130,23 @@ Acervo adicional do fluxo operacional:
 ---
 
 Desenvolvido em contexto academico e aplicado a um problema operacional real de custo, eficiencia e seguranca.
+
+
+## Navegação dos materiais
+
+| Pasta ou arquivo | Acesso |
+|---|---|
+| ARQUITETURA_PUBLICA.md | [Abrir arquivo](./ARQUITETURA_PUBLICA.md) |
+| IMAGENS LINKEDIN-README | [Abrir pasta](./IMAGENS%20LINKEDIN-README) |
+| IMGS | [Abrir pasta](./IMGS) |
+| assets | [Abrir pasta](./assets) |
+| atendente-web.html | [Abrir arquivo](./atendente-web.html) |
+| atendente.html | [Abrir arquivo](./atendente.html) |
+| gerenciamento.html | [Abrir arquivo](./gerenciamento.html) |
+| index.html | [Abrir arquivo](./index.html) |
+| painel-tv.html | [Abrir arquivo](./painel-tv.html) |
+| sim-core.js | [Abrir arquivo](./sim-core.js) |
+| sim-style.css | [Abrir arquivo](./sim-style.css) |
+| status.html | [Abrir arquivo](./status.html) |
+| totem.html | [Abrir arquivo](./totem.html) |
+
